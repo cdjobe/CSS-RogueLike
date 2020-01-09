@@ -1,0 +1,121 @@
+body {
+            background-color: rgb(7,12,44);
+        }
+        #world {
+            width: 1000px;
+            min-height: 500px;
+
+
+            margin: 0px auto;
+        }
+        .row {
+            width: 1000px;
+            text-align: center;
+            vertical-align: top;
+        }
+        .box {
+            width: 20px;
+            height: 20px;
+            border: 1px solid black;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        #bottom-group {
+            width: 600px;
+            min-height: 300px;
+            margin: 10px auto;
+            text-align: center;
+        }
+
+        #bottom-group #text {
+            background-color: white;
+            width: 400px;
+            min-height: 150px;
+            margin: 0 auto;
+            display: inline-block;
+            vertical-align: middle;
+            color: black;
+            font-size: 20px;
+            font-family: 'VT323', monospace;
+            border-radius: 5px;
+        }
+
+        #bottom-group .post {
+            width: 50px;
+            min-height: 100px;
+            /* background-color: yellow; */
+            display: inline-block;
+            vertical-align: middle;  
+        }
+        @keyframes flame {
+            0% {background: linear-gradient(0deg, rgba(255,239,0,1) 0%, rgba(255,131,0,1) 20%, rgba(255,0,0,1) 100%);} 
+            20% {background: linear-gradient(0deg, rgba(255,239,0,1) 0%, rgba(255,131,0,1) 40%, rgba(255,0,0,1) 100%);}
+            50% {background: linear-gradient(0deg, rgba(255,239,0,1) 0%, rgba(255,131,0,1) 70%, rgba(255,0,0,1) 100%); }
+        }
+        .lantern {
+            position: relative;
+            top: 3px;
+            width: 30px;
+            min-height: 85px;
+            border-radius: 10% 10% 50% 50%;
+            margin: 0 auto;
+            background: linear-gradient(0deg, rgba(255,239,0,1) 0%, rgba(255,131,0,1) 20%, rgba(255,0,0,1) 100%);
+            border: 1px solid black;
+            animation-name: flame;
+            animation-duration: 2s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+
+        .setting {
+            width: 20px;
+            min-height: 10px;
+            border-radius: 10%;
+            background-color:grey;
+            margin: 0 auto;
+            border: 2px dotted black;
+
+        }
+        .handle {
+            width: 15px;
+            min-height: 80px;
+            background-color: grey;
+            margin: 0 auto;
+            border-radius: 0 0 10px 10px;
+            border: 2px dotted black;
+        }
+        .grooveOne, .grooveTwo {
+            width: 2px;
+            min-height: 70px;
+            background-color: darkslategray;
+            vertical-align: bottom;
+            display: inline-block;
+        }
+        .grooveOne {
+            margin: 10px auto 0px 3px;
+        }
+        .grooveTwo {
+            margin: 10px 3px 0px auto;
+        }
+
+        .red {
+            background-color: red;
+        }
+        .blue {
+            background-color: blue;
+        }
+        .black {
+            background-color: black;
+        }
+        .wall {
+            background-color: rgb(79,22,0);
+        }
+        .floor {
+            background-color: rgb(132,153,3);
+        }
+        .player {
+            border-radius: 50%;
+            background-color: rgb(94,3,103);
+        }
