@@ -21,8 +21,8 @@ class Wall {
 
 class Floor {
     constructor() {
-        this.output = "<div class='box floor'></div>";
         this.type = "floor";
+        this.output = "<div class='box floor'></div>";
         this.description = "just a floor";
         this.passable = true;
     }
@@ -61,6 +61,7 @@ class Room {
 
 class Player {
     constructor() {
+        this.output = "<div class='box player'></div>";
         this.x = 1;
         this.y = 1;
         this.type = "player";
@@ -190,17 +191,19 @@ class Player {
         for(var i=0; i<world.length; i++) {
             output += "<div class='row'>";
             for(var j=0; j<world[i].length - 1; j++) {
-                if (world[i][j].type == "player") {
-                    // console.log("player at i = " + i + "j = " + j);
-                    output += "<div class='box player'></div>";
-                }
-                else if (world[i][j] == 2)
-                    output += "<div class='box red'></div>";
-                else if(world[i][j].type == "wall")
-                    output += "<div class='box wall'></div>";
-                else if (world[i][j].type == "floor") 
-                    output += "<div class='box floor'></div>";
-            }
+            //     if (world[i][j].type == "player") {
+            //         // console.log("player at i = " + i + "j = " + j);
+            //         output += "<div class='box player'></div>";
+            //     }
+            //     else if (world[i][j] == 2)
+            //         output += "<div class='box red'></div>";
+            //     else if(world[i][j].type == "wall")
+            //         output += "<div class='box wall'></div>";
+            //     else if (world[i][j].type == "floor") 
+            //         output += "<div class='box floor'></div>";
+            // 
+                output += world[i][j].output;
+        }
             output +=  "</div>";
         }
         $('#world').html(output);
