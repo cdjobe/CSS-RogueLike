@@ -28,11 +28,20 @@ class Floor {
     }
 };
 
+class Door {
+    constructor( location ) {
+        this.type = "door";
+        this.location = location;
+        this.output = "<div class='box'><div class='door'></div></div>"
+        this.description = "a door. opened or closed it's just a door"
+        this.passable = true;
+    } 
+}
+
 class Room {
     constructor( topLeft, bottomRight ) {
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
-        
         console.log(topLeft, bottomRight)
         
         this.createRoom = function() {
@@ -40,10 +49,15 @@ class Room {
             var width = bottomRight[1] - bottomRight[1];
                         
             for ( var i = topLeft[0]; i < bottomRight[0]; i++ ) {              
-                // left wall
-                world[i][topLeft[1]] = new Wall;
-                // right wall
-                world[i][bottomRight[1]] = new Wall;
+                console.log( world[i][topLeft[1]].type )
+                if ( world[i][topLeft[1]].type == 'floor' ) {
+                    // left wall
+                    world[i][topLeft[1]] = new Wall;
+                }
+                if ( world[i][bottomRight[1]].type == 'floor' ) {
+                    // right wall
+                    world[i][bottomRight[1]] = new Wall;
+                }
                 for ( var j = topLeft[1]; j <= bottomRight[1]; j++ ) {
                     // top wall
                     world[topLeft[0]][j] = new Wall();
@@ -54,8 +68,16 @@ class Room {
             }
         }
 
+        this.createDoors = function() {
+            const doorY = randomInt(topLeft[0]+1, bottomRight[0]-1);
+            const doorX = randomInt(topLeft[1], bottomRight[1]+1);
+            console.log(doorY, bottomRight[1])
+            world[doorY][bottomRight[1]] = new Door( [ doorY, bottomRight[1]]);
+            world[topLeft[0]][doorX] = new Door( [ topLeft[0], doorX ]);
+    }
+        
         this.createRoom();
-
+        this.createDoors();
     }
 };
 
@@ -70,7 +92,6 @@ class Player {
     
 };
 
-    
     var worldHeight = 30;
     var worldWidth = 30;
     var world = [...Array(worldHeight)].map(e => Array(worldWidth).fill(new Floor));
@@ -111,7 +132,7 @@ class Player {
         function makeRooms(minY, minX, maxY, maxX) {
             var roomHeight = maxY - minY;
             var roomWidth = maxX - minX;
-            console.log(`Height = ${roomHeight}, Width = ${roomWidth}`);
+            // console.log(`Height = ${roomHeight}, Width = ${roomWidth}`);
             
             if ( roomHeight < minHeight || roomWidth < minWidth ) {
                 while (roomHeight <= minHeight) {
@@ -120,7 +141,7 @@ class Player {
                 while ( roomWidth <= minWidth) {
                     roomWidth++
                 }
-                console.log("returning nothing");
+                // console.log("returning nothing");
                 return new Room([minY, minX], [maxY, maxX]);
             }
             
@@ -131,7 +152,7 @@ class Player {
             };
         
             if ( roomHeight > roomWidth  ) {
-                console.log( "room height > room width")
+                // console.log( "room height > room width")
                 var randomHeight = randomInt( minHeight, maxHeight );
                 var newRoom = makeRooms(  minY, minX, 
                             minY + randomHeight, maxX 
@@ -142,7 +163,7 @@ class Player {
                 );
             }
             else if ( roomHeight  <  roomWidth ) {
-                console.log( "room height < room width")
+                // console.log( "room height < room width")
                 var randomWidth = randomInt ( minWidth, maxWidth );
                 makeRooms(  minY, minX,   // minY, minX
                             maxY, minX + randomWidth  // maxY, maxX
@@ -154,7 +175,7 @@ class Player {
             }
             else {
                 var direction = randomInt(1,2);
-                console.log(`direction = ${direction}`);
+                // console.log(`direction = ${direction}`);
                 
                 if ( direction == 1 ) {
 
