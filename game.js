@@ -10,6 +10,8 @@ function randomInt(min, max) { // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+var doorList = []
+
 class Wall {
     constructor() {
         this.type = "wall";
@@ -31,7 +33,8 @@ class Floor {
 class Door {
     constructor( location ) {
         this.type = "door";
-        this.location = location;
+        this.x = location[1]
+        this.y = location[0]
         this.output = "<div class='box'><div class='door'></div></div>"
         this.description = "a door. opened or closed it's just a door"
         this.passable = true;
@@ -42,48 +45,77 @@ class Room {
     constructor( topLeft, bottomRight ) {
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
-        console.log(topLeft, bottomRight)
+        // console.log(topLeft, bottomRight)
         
         this.createRoom = function() {
             var height = bottomRight[0] - bottomRight[0];
             var width = bottomRight[1] - bottomRight[1];
-                        
+            
             for ( var i = topLeft[0]; i < bottomRight[0]; i++ ) {              
-                console.log( world[i][topLeft[1]].type )
-                if ( world[i][topLeft[1]].type == 'floor' ) {
-                    // left wall
-                    world[i][topLeft[1]] = new Wall;
-                }
+                // console.log( world[i][topLeft[1]].type )
+                // left wall
+                // if ( world[i][topLeft[1]].type == 'floor' || world[i][topLeft[1]].type == 'door') {
+                //     world[i][topLeft[1]] = new Wall;
+                // }
+                // right wall
                 if ( world[i][bottomRight[1]].type == 'floor' ) {
-                    // right wall
                     world[i][bottomRight[1]] = new Wall;
                 }
                 for ( var j = topLeft[1]; j <= bottomRight[1]; j++ ) {
                     // top wall
-                    world[topLeft[0]][j] = new Wall();
+                    // if ( world[topLeft[0]][j].type == 'floor' )
+                    //     world[topLeft[0]][j] = new Wall();
                     // bottom wall
+                    if ( world[bottomRight[0]][j].type == 'floor' ) {
                     // console.log("bottomright 0  = ", bottomRight[0])
-                    world[bottomRight[0]][j] = new Wall();
+                        world[bottomRight[0]][j] = new Wall();
+                    }
                 }
             }
+            // this.createDoors()
         }
 
         this.createDoors = function() {
-            const doorY = randomInt(topLeft[0]+1, bottomRight[0]-1);
-            const doorX = randomInt(topLeft[1], bottomRight[1]+1);
-            console.log(doorY, bottomRight[1])
-            world[doorY][bottomRight[1]] = new Door( [ doorY, bottomRight[1]]);
-            world[topLeft[0]][doorX] = new Door( [ topLeft[0], doorX ]);
-    }
+            let doorOneIsValid = false;
+            let doorTwoIsValid = false;
+            var doorY = randomInt(topLeft[0]+1, bottomRight[0]-1);
+            let doorX = randomInt(topLeft[1]+1, bottomRight[1]-1);
+            let numberOfDoors = randomInt(1,2)
+            var directions = ['right', 'down']
+            var direction = directions[ randomInt(0,1)]
+            console.log(direction)
+            console.log(numberOfDoors)
+            
+            if ( direction == 'down' && bottomRight[0] < worldHeight -1 ) {
+                world[bottomRight[0]][doorX] = new Door( [ doorY, bottomRight[1] ])
+                doorList.push(world[doorY][bottomRight[1]])
+            }
+
+            if ( bottomRight[1] < worldWidth-1 ) {
+                // console.log(`doorY = ${doorY} bottomRight[1] = ${bottomRight[1]}`)
+                if ( world[doorY][bottomRight[1]+1].type == 'floor' && world[doorY][bottomRight[1]-1].type == 'floor') {
+                    world[doorY][bottomRight[1]] = new Door( [ doorY, bottomRight[1] ])
+                    doorList.push(world[doorY][bottomRight[1]])
+                }
+            }
+            // Lower wall
+            if ( bottomRight[0] < worldHeight-1) {
+                if ( world[bottomRight[0]+1][doorX].type == 'floor' && world[bottomRight[0]-1][doorX].type == 'floor' )
+                    world[bottomRight[0]][doorX] = new Door( [ bottomRight[0], doorX ])
+                    doorList.push(world[bottomRight[0]][doorX])
+            }
+        }
+
         
         this.createRoom();
-        this.createDoors();
+        // this.createDoors();
+        return this;
     }
 };
 
 class Player {
     constructor() {
-        this.output = "<div class='box player'></div>";
+        this.output = "<div class='player-background'><div class='box player'></div></div>";
         this.x = 1;
         this.y = 1;
         this.type = "player";
@@ -100,14 +132,14 @@ class Player {
     
     //***********************************************************************//
     function makeWorld() {
-        for(var i = 0; i < world.length; i++) {
+        for(var i = 0; i < worldWidth; i++) {
             // console.log(i)
             world[i][0] = new Wall;
-            world[i][world.length] = new Wall;
+            world[i][worldWidth-1] = new Wall;
         }
-        for(var i = 0; i < world[0].length; i++) {
+        for(var i = 0; i < worldHeight; i++) {
             world[0][i] = new Wall;
-            world[world.length-1][i] = new Wall;
+            world[worldHeight-1][i] = new Wall;
         }
         player = new Player;
         world[1][1] = player;
@@ -126,9 +158,15 @@ class Player {
 
         var remainingHeight = worldHeight - minY;
         var remainingWidth = worldWidth - minX;
+        var roomList = [];
 
-        makeRooms(minY, minX, maxY, maxX, 29, 29);
-        
+        makeRooms(minY, minX, maxY, maxX);
+        for ( var i = 0; i < roomList.length; i++ ) {
+            console.log(roomList[i])
+            roomList[i].createDoors()
+
+        }
+
         function makeRooms(minY, minX, maxY, maxX) {
             var roomHeight = maxY - minY;
             var roomWidth = maxX - minX;
@@ -136,19 +174,21 @@ class Player {
             
             if ( roomHeight < minHeight || roomWidth < minWidth ) {
                 while (roomHeight <= minHeight) {
-                    roomHeight++
+                    roomHeight++;
                 }
                 while ( roomWidth <= minWidth) {
-                    roomWidth++
+                    roomWidth++;
                 }
                 // console.log("returning nothing");
-                return new Room([minY, minX], [maxY, maxX]);
+                // return new Room([minY, minX], [maxY, maxX]);
+                return roomList.push(new Room( [minY, minX], [maxY, maxX ]) )
             }
             
             if (    ((roomWidth <= maxWidth) && (roomWidth => minWidth))  &&
                     ((roomHeight <= maxHeight) && (roomHeight => minHeight))
                 ){
-                    return new Room([minY, minX], [maxY, maxX]);
+                    // return new Room([minY, minX], [maxY, maxX]);
+                    return roomList.push(new Room( [minY, minX], [maxY, maxX]) )
             };
         
             if ( roomHeight > roomWidth  ) {
@@ -168,7 +208,6 @@ class Player {
                 makeRooms(  minY, minX,   // minY, minX
                             maxY, minX + randomWidth  // maxY, maxX
                 );
-                
                 makeRooms(  minY, minX + randomWidth, 
                             maxY, maxX
                 );
@@ -209,20 +248,9 @@ class Player {
     function displayWorld() {
         var output = '';
 
-        for(var i=0; i<world.length; i++) {
+        for(var i=0; i<worldHeight; i++) {
             output += "<div class='row'>";
-            for(var j=0; j<world[i].length - 1; j++) {
-            //     if (world[i][j].type == "player") {
-            //         // console.log("player at i = " + i + "j = " + j);
-            //         output += "<div class='box player'></div>";
-            //     }
-            //     else if (world[i][j] == 2)
-            //         output += "<div class='box red'></div>";
-            //     else if(world[i][j].type == "wall")
-            //         output += "<div class='box wall'></div>";
-            //     else if (world[i][j].type == "floor") 
-            //         output += "<div class='box floor'></div>";
-            // 
+            for(var j=0; j<worldWidth; j++) {
                 output += world[i][j].output;
         }
             output +=  "</div>";
@@ -239,18 +267,19 @@ class Player {
         // console.log(e.keyCode);
         // Down-40, Left-37, Right-39, Up-38
         // console.log(player.y, player.x);
+        
         // Down
+        obj = new Floor();
         $('#text').text("");
         if (e.keyCode == 40) {
             if (world[player.y+1][player.x].passable == true) {
-                obj = world[player.y+1][player.x]
-                console.log(world[player.y+1][player.x])
                 world[player.y][player.x] = obj;
+                obj = world[player.y+1][player.x]
                 player.y++;
                 world[player.y][player.x] = player;
             }
             else {
-                console.log(world[player.y+1][player.x].description);
+                // console.log(world[player.y+1][player.x].description);
                 showDescBox(world[player.y+1][player.x].description);
             }
         }
@@ -263,7 +292,7 @@ class Player {
                 world[player.y][player.x] = player;
             }
             else {
-                console.log(world[player.y-1][player.x].description);
+                // console.log(world[player.y-1][player.x].description);
                 showDescBox(world[player.y-1][player.x].description);
             }
         }
@@ -273,6 +302,7 @@ class Player {
                 console.log(obj)
                 world[player.y][player.x] = obj;
                 player.x--;
+                obj = world[player.y][player.x];
                 world[player.y][player.x] = player;
             }
             else {
@@ -283,10 +313,9 @@ class Player {
         // Right
         if (e.keyCode == 39) {
             if (world[player.y][player.x + 1].passable == true) {
-                console.log(world[player.y][player.x])
-                obj = world[player.y][player.x + 1]
                 world[player.y][player.x] = obj;
                 player.x++;
+                obj = world[player.y][player.x];
                 world[player.y][player.x] = player;
             }
             else {
